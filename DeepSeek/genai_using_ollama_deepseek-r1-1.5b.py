@@ -1,13 +1,13 @@
 import streamlit as st
 from langchain_ollama import ChatOllama
 from langchain_core.output_parsers import StrOutputParser
-
 from langchain_core.prompts import (
     SystemMessagePromptTemplate,
     HumanMessagePromptTemplate,
     AIMessagePromptTemplate,
     ChatPromptTemplate
 )
+
 # Custom CSS styling
 st.markdown("""
 <style>
@@ -67,15 +67,11 @@ with st.sidebar:
     st.divider()
     st.markdown("Built with [Ollama](https://ollama.ai/) | [LangChain](https://python.langchain.com/)")
 
-
 # initiate the chat engine
-
-llm_engine=ChatOllama(
+llm_engine = ChatOllama(
     model=selected_model,
     base_url="http://localhost:11434",
-
     temperature=0.3
-
 )
 
 # System prompt configuration
@@ -101,7 +97,7 @@ with chat_container:
 user_query = st.chat_input("Type your coding question here...")
 
 def generate_ai_response(prompt_chain):
-    processing_pipeline=prompt_chain | llm_engine | StrOutputParser()
+    processing_pipeline = prompt_chain | llm_engine | StrOutputParser()
     return processing_pipeline.invoke({})
 
 def build_prompt_chain():
@@ -121,9 +117,24 @@ if user_query:
     with st.spinner("🧠 Processing..."):
         prompt_chain = build_prompt_chain()
         ai_response = generate_ai_response(prompt_chain)
-    
-    # Add AI response to log
-    st.session_state.message_log.append({"role": "ai", "content": ai_response})
+        
+        # Parse the response to extract thinking content and final response
+        thinking_content = ""
+        final_response = ""
+        if "<think>" in ai_response and "</think>" in ai_response:
+            thinking_content = ai_response.split("<think>")[1].split("</think>")[0]
+            final_response = ai_response.split("</think>")[1]
+        else:
+            final_response = ai_response
+        
+        # Display thinking content live
+        if thinking_content:
+            with chat_container:
+                with st.chat_message("ai"):
+                    st.markdown(f"🤔 **Thinking:** {thinking_content}")
+        
+        # Add AI response to log
+        st.session_state.message_log.append({"role": "ai", "content": final_response})
     
     # Rerun to update chat display
     st.rerun()

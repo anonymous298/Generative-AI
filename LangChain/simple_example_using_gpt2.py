@@ -1,11 +1,15 @@
-from transformers import pipeline
+from transformers import pipeline, AutoModelForCausalLM, AutoTokenizer
 from langchain_huggingface import HuggingFacePipeline
 from langchain.prompts import PromptTemplate
 from langchain.chains.llm import LLMChain
 
-hf_model = pipeline('text-generation', model='gpt2')
+# hf_model = pipeline('text-generation', model='gpt2')
+model = AutoModelForCausalLM.from_pretrained('openai-community/gpt2')
+tokenizer = AutoTokenizer.from_pretrained('openai-community/gpt2')
 
-llm = HuggingFacePipeline(pipeline=hf_model)
+pipe = pipeline('text-generation', model=model, tokenizer=tokenizer)
+
+llm = HuggingFacePipeline(pipeline=pipe)
 
 prompt_template = PromptTemplate(
     input_variables=['topic'],

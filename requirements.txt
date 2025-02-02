@@ -7,3 +7,5 @@ langserve
 uvicorn
 fastapi
 sse_starlette
+google-generativeai
+langchain_google_genai

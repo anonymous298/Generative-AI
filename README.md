@@ -1,1 +1,1 @@
-# This Repo Consist of Generative AI materials.
+# This Repo Consists of Generative AI materials.

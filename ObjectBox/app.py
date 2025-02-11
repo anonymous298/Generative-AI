@@ -88,7 +88,7 @@ class InitializeSessions:
             print(e)
 
 class ChatBot:
-    
+
     @staticmethod
     def initializeChat(query: str):
         try:
